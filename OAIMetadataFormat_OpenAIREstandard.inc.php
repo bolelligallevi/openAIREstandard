@@ -169,7 +169,7 @@ class OAIMetadataFormat_OpenAIREstandard extends OAIMetadataFormat {
         $subjects = array();
         if (is_array($article->getSubject(null))) {
             foreach ($article->getSubject(null) as $locale => $subject) {
-                $s = array_map('trim', explode(';', $subject));
+                $s = array_map("trim", $subject);
                 if (!empty($s))
                     $subjects[$locale] = $s;
             }
@@ -223,7 +223,8 @@ class OAIMetadataFormat_OpenAIREstandard extends OAIMetadataFormat {
             $response .= ($pageInfo ? "<datacite:size>" . (int) $pageInfo['pagecount'] . " Pages</datacite:size>\n" : '');
             foreach ($galleys as $galley) {
                 if($galley->getFile()){
-                    $response .= "<datacite:size>" . round($galley->getFile()->getFileSize() / 1024 / 1024, 2) . " MB</datacite:size>\n";
+                        $submissionFile = Services::get('submissionFile')->get($galley->getData('submissionFileId'));
+                        $response .= "<datacite:size>" . round(Services::get('file')->fs->getSize($submissionFile->getData('path')) / 1024 / 1024, 2) . " MB</datacite:size>\n";
                 }
             }
             $response .= "</datacite.sizes>\n";
